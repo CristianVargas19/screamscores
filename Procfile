@@ -1,1 +1,1 @@
-web: gunicorn PELICULAS:app 
+web: gunicorn PELICULAS.py:app 
