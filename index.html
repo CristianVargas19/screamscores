@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerrorFlix - Calificación de Películas de Terror</title>
+    <style>
+        :root {
+            --primary-color: #8B0000;
+            --secondary-color: #2C0703;
+            --accent-color: #FF4500;
+            --text-color: #F5F5F5;
+            --card-bg: #1A1A1A;
+            --shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #121212;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(0,0,0,0.2)"/></svg>');
+            background-size: cover;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            position: relative;
+        }
+        
+        .tagline {
+            font-style: italic;
+            opacity: 0.8;
+            position: relative;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .intro {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+        
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .movie-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7);
+        }
+        
+        .movie-header {
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .movie-title {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .movie-director {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .movie-body {
+            padding: 1.5rem;
+        }
+        
+        .movie-year {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .movie-sinopsis {
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .movie-rating {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stars {
+            color: gold;
+            font-size: 1.2rem;
+        }
+        
+        .rating-text {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.2rem;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 2rem;
+            color: var(--accent-color);
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            background-color: var(--secondary-color);
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        @media (max-width: 768px) {
+            .movies-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>TerrorFlix</h1>
+        <p class="tagline">Tu guía definitiva para películas de terror</p>
+    </header>
+    
+    <div class="container">
+        <section class="intro">
+            <h2>Calificación de Películas de Terror</h2>
+            <p>Explora nuestra colección de clásicos del terror y descubre cómo han sido calificados por nuestra comunidad. ¿Estás listo para el miedo?</p>
+        </section>
+        
+        <div id="movies-container">
+            <div class="loading">Cargando películas de terror...</div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>TerrorFlix &copy; 2023 - Proyecto Heroku</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const moviesContainer = document.getElementById('movies-container');
+            
+            // Función para obtener las películas desde la API
+            async function fetchMovies() {
+                try {
+                    const response = await fetch('/peliculas');
+                    if (!response.ok) {
+                        throw new Error('Error al cargar las películas');
+                    }
+                    const movies = await response.json();
+                    displayMovies(movies);
+                } catch (error) {
+                    console.error('Error:', error);
+                    moviesContainer.innerHTML = `
+                        <div class="error">
+                            <h3>¡Algo salió mal!</h3>
+                            <p>No se pudieron cargar las películas. Por favor, intenta más tarde.</p>
+                            <p>Detalles del error: ${error.message}</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Función para mostrar las películas en el DOM
+            function displayMovies(movies) {
+                if (!movies || movies.length === 0) {
+                    moviesContainer.innerHTML = '<div class="error">No se encontraron películas.</div>';
+                    return;
+                }
+                
+                let moviesHTML = '<div class="movies-grid">';
+                
+                movies.forEach(movie => {
+                    // Convertir calificación de texto a estrellas
+                    const starCount = parseInt(movie.calificacion.charAt(0));
+                    let starsHTML = '';
+                    for (let i = 0; i < 3; i++) {
+                        if (i < starCount) {
+                            starsHTML += '★';
+                        } else {
+                            starsHTML += '☆';
+                        }
+                    }
+                    
+                    moviesHTML += `
+                        <div class="movie-card">
+                            <div class="movie-header">
+                                <h3 class="movie-title">${movie.titulo}</h3>
+                                <p class="movie-director">Dirigida por ${movie.director}</p>
+                            </div>
+                            <div class="movie-body">
+                                <span class="movie-year">${movie.año}</span>
+                                <p class="movie-sinopsis">${movie.sinopsis}</p>
+                                <div class="movie-rating">
+                                    <div class="stars">${starsHTML}</div>
+                                    <span class="rating-text">${movie.calificacion}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                moviesHTML += '</div>';
+                moviesContainer.innerHTML = moviesHTML;
+            }
+            
+            // Cargar las películas al iniciar
+            fetchMovies();
+        });
+    </script>
+</body>
+</html>
