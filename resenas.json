@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "pelicula_id": "1",
+    "pelicula_titulo": "El Exorcista",
+    "usuario": "Cristian",
+    "calificacion": 1,
+    "comentario": "Muy mala no da miedo ",
+    "fecha": "1/10/2025"
+  }
+]
